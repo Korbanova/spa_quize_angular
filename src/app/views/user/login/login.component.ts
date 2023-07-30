@@ -33,11 +33,6 @@ export class LoginComponent {
               throw new Error(data.message ? data.message : 'Error with data on login');
             }
 
-            // Auth.setTokens(result.accessToken, result.refreshToken);
-            // Auth.setUserInfo({
-            //   fullName: result.fullName,
-            //   userId: result.userId
-            // })
             if (this.loginForm.value.email) {
               localStorage.setItem('email', this.loginForm.value.email);
             }
