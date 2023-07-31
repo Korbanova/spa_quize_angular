@@ -6,6 +6,7 @@ import {Observable, Subject, tap} from "rxjs";
 import {UserInfoType} from "../../../types/user-info.type";
 import {DefaultResponseType} from "../../../types/default-response.type";
 import {SignupResponseType} from "../../../types/signup-response.type";
+import {RefreshResponseType} from "../../../types/refresh-response.type";
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,13 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     this.isLogged = !!localStorage.getItem(this.accessTokenKey);
+  }
+
+  refresh(): Observable<RefreshResponseType> {
+    const refreshToken: string | null = localStorage.getItem(this.refreshTokenKey);
+    return this.http.post<RefreshResponseType>(environment.apiHost + 'refresh', {
+      refreshToken
+    })
   }
 
   signup(name: string, lastName: string, email: string, password: string): Observable<SignupResponseType> {
@@ -38,10 +46,11 @@ export class AuthService {
     })
       .pipe(
         tap((data: LoginResponseType) => {
-          if(data.fullName && data.userId && data.accessToken && data.refreshToken){
+          if (data.fullName && data.userId && data.accessToken && data.refreshToken) {
             this.setUserInfo({
               fullName: data.fullName,
-              userId: data.userId
+              userId: data.userId,
+              //email: email
             })
             this.setTokens(data.accessToken, data.refreshToken);
           }
@@ -82,12 +91,18 @@ export class AuthService {
     localStorage.removeItem(this.userInfoKey);
   }
 
-
   public getUserInfo(): UserInfoType | null {
     const userinfo: string | null = localStorage.getItem(this.userInfoKey);
     if (userinfo) {
       return JSON.parse(userinfo);
     }
     return null;
+  }
+
+  public getTokens(): { accessToken: string | null, refreshToken: string | null } {
+    return {
+      accessToken: localStorage.getItem(this.accessTokenKey),
+      refreshToken: localStorage.getItem(this.refreshTokenKey)
+    }
   }
 }
