@@ -5,6 +5,7 @@ import {HttpClient} from "@angular/common/http";
 import {QuizListType} from "../../../types/quiz-list.type";
 import {DefaultResponseType} from "../../../types/default-response.type";
 import {TestResultType} from "../../../types/test-result.type";
+import {QuizType} from "../../../types/quiz.type";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,10 @@ export class TestService {
   }
 
   getUserResults(userId: number): Observable<TestResultType[] | DefaultResponseType> {
-    return this.http.get<TestResultType[] | DefaultResponseType>(environment.apiHost + '/tests/results?userId=' + userId);
+    return this.http.get<TestResultType[] | DefaultResponseType>(environment.apiHost + 'tests/results?userId=' + userId);
+  }
+
+  getQuiz(id: number | string): Observable<DefaultResponseType | QuizType> {
+    return this.http.get<DefaultResponseType | QuizType>(environment.apiHost + 'tests/' + id);
   }
 }
